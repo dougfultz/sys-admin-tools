@@ -1,4 +1,32 @@
 #!/bin/bash
+#----------------------------------------------------------
+# Debug stuff
+# Print line before executing
+#set -x
+# Error out on unbound variables
+#set -u
+#----------------------------------------------------------
+# Global Variables
+#----------------------------------------------------------
+function scanScsi() {
+    for i in `ls /sys/class/scsi_host/host*/scan`
+    do
+        echo "- - -" > $i
+    done
+}
+#----------------------------------------------------------
+function scanBlock() {
+    for i in `ls /sys/block/*/device/rescan`
+    do
+        echo 1 > $i
+    done
+}
+#----------------------------------------------------------
+function debShowDisks() {
+
+    lshw -short | grep "dev"
+}
+#=Main=====================================================
 
 if [ ! "`whoami`" = "root" ]
 then
@@ -6,18 +34,11 @@ then
     exit 1
 fi
 
-echo "Scanning for new disks..."
-for i in `ls /sys/class/scsi_host/host*/scan`
-do
-    echo "- - -" > $i
-done
+echo "Scanning SCSI controller..."
+scanScsi
 
-echo "Scanning for larger disks..."
-for i in `ls /sys/block/*/device/rescan`
-do
-    echo 1 > $i
-done
+echo "Scanning block devices..."
+scanBlock
 
 echo "Showing disks:"
-lshw -short | grep "dev"
-
+debShowDisks
