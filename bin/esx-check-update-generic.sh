@@ -41,3 +41,12 @@ fi
 
 #About the ESXi 5.x and 6.0 firewall
 #http://kb.vmware.com/kb/2005284
+
+#Show current image profile
+# esxcli software profile get
+
+#Show available image profiles from depot
+# esxcli software sources profile list -d $REPO
+
+#Update profile
+# esxcli software profile update -p $PROFILE -d $REPO
