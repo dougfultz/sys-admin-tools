@@ -18,8 +18,11 @@ def scanBlock():
             f.write("1")
 #----------------------------------------------------------
 def debShowDisks():
-    devices = subprocess.Popen("lshw -short | grep \"dev\"",shell=True,stdout=subprocess.PIPE,stdin=subprocess.PIPE)
-    print(devices.stdout)
+    devices = subprocess.check_output(["lshw","-short"])
+
+    for i in devices.splitlines():
+        if "dev" in i:
+            print(i)
 #=Main=====================================================
 if __name__ == "__main__":
 
@@ -32,7 +35,7 @@ if __name__ == "__main__":
     scanScsi()
 
     print("Scanning block devices...")
-    scanBlock
+    scanBlock()
 
     print("Showing disks:")
-    debShowDisks
+    debShowDisks()
