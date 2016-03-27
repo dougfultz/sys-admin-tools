@@ -11,3 +11,16 @@ PerformUpgrade=False
 if __name__ == "__main__":
     #Enable firewall rule
     subprocess.call(["ssh","-i",sshkey,"-l",username,hostname,"esxcli network firewall ruleset set -e true -r httpClient"])
+
+    #Disable shell/ssh warnings
+    #http://kb.vmware.com/kb/2003637
+    subprocess.call(["ssh","-i",sshkey,"-l",username,hostname,"vim-cmd hostsvc/advopt/update UserVars.SuppressShellWarning long 1"])
+
+    #check for updates
+    updateList = subprocess.check_output(["ssh","-i",sshkey,"-l",username,hostname,"esxcli software sources vib list -d "+repo])
+    if (type(updateList) != type(str())):
+        updateList=updateList.decode()
+    if "update" in updateList.lower():
+        for i in updateList.splitlines():
+            if "status" in i.lower() or "--" in i.lower() or "update" in i.lower():
+                print(i)
