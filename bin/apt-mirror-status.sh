@@ -31,7 +31,23 @@ function archiveStatus() {
         echo "    $i - $CURRENT/$TOTAL"
     done
 }
+#----------------------------------------------------------
+function usage() {
+    echo "help placeholder"
+}
 #=Main=====================================================
+
+while [ -n "$*" ]; do
+    parm=$1
+    case $parm in
+        *)
+            echo "Invalid parameter: $parm"
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
 
 indexStatus
 archiveStatus
