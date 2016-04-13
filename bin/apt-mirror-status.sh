@@ -1,5 +1,16 @@
 #!/bin/bash
-
+#----------------------------------------------------------
+# Debug stuff
+# Print line before executing
+#set -x
+# Error out on unbound variables
+#set -u
+#----------------------------------------------------------
+# Global Variables
+showIndexLog=false
+showArchiveLog=false
+#----------------------------------------------------------
+#=Main=====================================================
 echo "Index status:"
 
 for i in `ls /var/spool/apt-mirror/var/index-urls.* | cut -d. -f2`
