@@ -33,7 +33,9 @@ function archiveStatus() {
 }
 #----------------------------------------------------------
 function usage() {
-    echo "help placeholder"
+    echo "$0 - Usage:"
+    echo "index:    Show index log."
+    echo "archive:  Show archive log."
 }
 #=Main=====================================================
 
