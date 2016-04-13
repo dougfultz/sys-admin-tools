@@ -21,6 +21,13 @@ function indexStatus() {
     done
 }
 #----------------------------------------------------------
+function indexLog() {
+    if $showIndexLog
+    then
+        tail -n2 /var/spool/apt-mirror/var/index-log.* | grep -A 1 "<==" | grep -v "\-\-"
+    fi
+}
+#----------------------------------------------------------
 function archiveStatus() {
     echo "Archive status:"
 
@@ -32,8 +39,15 @@ function archiveStatus() {
     done
 }
 #----------------------------------------------------------
+function archiveLog() {
+    if $showArchiveLog
+    then
+        tail -n2 /var/spool/apt-mirror/var/archive-log.* | grep -A 1 "<==" | grep -v "\-\-"
+    fi
+}
+#----------------------------------------------------------
 function usage() {
-    echo "$0 - Usage:"
+    echo "`basename $0` - Usage:"
     echo "index:    Show index log."
     echo "archive:  Show archive log."
 }
@@ -42,6 +56,12 @@ function usage() {
 while [ -n "$*" ]; do
     parm=$1
     case $parm in
+        "index")
+            showIndexLog=true
+            ;;
+        "archive")
+            showArchiveLog=true
+            ;;
         *)
             echo "Invalid parameter: $parm"
             usage
@@ -52,4 +72,6 @@ while [ -n "$*" ]; do
 done
 
 indexStatus
+indexLog
 archiveStatus
+archiveLog
