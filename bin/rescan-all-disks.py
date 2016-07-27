@@ -27,7 +27,7 @@ def debShowDisks():
     devices = subprocess.check_output(["lshw", "-short"])
 
     for i in devices.splitlines():
-        if (type(i) != type(str())):
+        if (isinstance(i, str)):
             i = i.decode()
         if "dev" in i:
             print(i)
@@ -35,7 +35,7 @@ def debShowDisks():
 if __name__ == "__main__":
 
     username = subprocess.check_output("whoami").strip()
-    if (type(username) != type(str())):
+    if (isinstance(username, str)):
         username = username.decode()
     if (username != "root"):
         print("You must be root.")
