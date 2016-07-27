@@ -1,36 +1,42 @@
 #!/usr/bin/env python
-#----------------------------------------------------------
+# ----------------------------------------------------------
 import glob
 import subprocess
-#----------------------------------------------------------
+# ----------------------------------------------------------
+
+
 def scanScsi():
     fileList = glob.glob("/sys/class/scsi_host/host*/scan")
 
     for i in fileList:
-        with open(i,'a') as f:
+        with open(i, 'a') as f:
             f.write("- - -")
-#----------------------------------------------------------
+# ----------------------------------------------------------
+
+
 def scanBlock():
     fileList = glob.glob("/sys/block/*/device/rescan")
 
     for i in fileList:
-        with open(i,'a') as f:
+        with open(i, 'a') as f:
             f.write("1")
-#----------------------------------------------------------
+# ----------------------------------------------------------
+
+
 def debShowDisks():
-    devices = subprocess.check_output(["lshw","-short"])
+    devices = subprocess.check_output(["lshw", "-short"])
 
     for i in devices.splitlines():
         if (type(i) != type(str())):
-            i=i.decode()
+            i = i.decode()
         if "dev" in i:
             print(i)
-#=Main=====================================================
+# =Main=====================================================
 if __name__ == "__main__":
 
     username = subprocess.check_output("whoami").strip()
     if (type(username) != type(str())):
-        username=username.decode()
+        username = username.decode()
     if (username != "root"):
         print("You must be root.")
         exit(1)
