@@ -12,3 +12,12 @@ Useful sys-admin-tools for Unix/Linux.
 * rescan-all-disks
     * Rescans SCSI controller for new disks.
     * Updates block devices sizes.
+
+## Ansible Playbooks
+
+* cups-Brother-HL-4070CDW.yaml
+  * Install and configure printer driver for Brother HL-4070CDW
+  * Works with Raspberry Pi
+* rpi-Brother-MFC-9970CDW.yaml
+  * Install and configure printer driver for Brother MFC-9970CDW
+  * Works with Raspberry Pi
