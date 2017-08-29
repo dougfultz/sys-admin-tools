@@ -1,0 +1,48 @@
+---
+# Execute playbook
+# ansible-playbook -i myhost, cups-Brother-HL-4070CDW.yaml --ask-become-pass --ask-pass
+
+- hosts: all
+  vars:
+    printer_name: Brother-HL-4070CDW
+    printer_ip: 192.168.XXX.XXX
+    printer_driver: Brother-HL-4070CDW-Postscript.ppd
+  tasks:
+
+  - name: Grant {{ansible_user_id}} lpadmin permissions
+    become: true
+    user:
+      name: "{{ansible_user_id}}"
+      append: yes
+      groups: lpadmin
+
+  - name: Install printer driver and dependencies
+    become: true
+    apt:
+      name: "{{item}}"
+      state: installed
+    with_items:
+      - foomatic-db
+
+  - name: Create {{printer_driver}} that works with Brother HL-4070CDW
+    shell: /usr/lib/cups/daemon/cups-driverd cat foomatic:{{printer_driver}} > /tmp/{{printer_driver}}
+    args:
+      chdir: /tmp
+      creates: /tmp/{{printer_driver}}
+
+  - name: Check if {{printer_name}} already exists
+    command: lpstat -p {{printer_name}}
+    register: lpstat
+    failed_when: False
+    changed_when: False
+
+  - name: Create {{printer_name}}
+    command: /usr/sbin/lpadmin -p {{printer_name}} -v ipp://{{printer_ip}}/BINARY_P1 -P /tmp/{{printer_driver}} -E
+    when: lpstat.rc != 0
+
+  - name: Validate {{printer_name}} is enabled
+    command: lpstat -p {{printer_name}}
+    register: lpstat
+    failed_when: "'enabled' not in lpstat.stdout"
+    changed_when: False
+    
