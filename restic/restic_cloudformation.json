@@ -1,0 +1,105 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {
+        "BackupUser": {
+            "Type": "AWS::IAM::User"
+        },
+        "BackupBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketEncryption": {
+                    "ServerSideEncryptionConfiguration": [
+                        {
+                            "ServerSideEncryptionByDefault": {
+                                "SSEAlgorithm": "AES256"
+                            }
+                        }
+                    ]
+                },
+                "LifecycleConfiguration": {
+                    "Rules": [
+                        {
+                            "Prefix": "restic/data",
+                            "Status": "Enabled",
+                            "Transitions": [
+                                {
+                                    "StorageClass": "INTELLIGENT_TIERING",
+                                    "TransitionInDays": 1
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "IntelligentTieringConfigurations": [
+                    {
+                        "Id": "IntelligentTieringArchive",
+                        "Prefix": "restic/data",
+                        "Status": "Enabled",
+                        "Tierings": [
+                            {
+                                "AccessTier": "ARCHIVE_ACCESS",
+                                "Days": 90
+                            },
+                            {
+                                "AccessTier": "DEEP_ARCHIVE_ACCESS",
+                                "Days": 180
+                            }
+                        ]
+                    }
+                ],
+                "PublicAccessBlockConfiguration": {
+                    "BlockPublicAcls": true,
+                    "BlockPublicPolicy": true,
+                    "IgnorePublicAcls": true,
+                    "RestrictPublicBuckets": true
+                }
+            }
+        },
+        "BackupBucketPolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket": {
+                    "Ref": "BackupBucket"
+                },
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": {
+                                    "Fn::GetAtt": [
+                                        "BackupUser",
+                                        "Arn"
+                                    ]
+                                }
+                            },
+                            "Action": "s3:*",
+                            "Resource": [
+                                {
+                                    "Fn::GetAtt": [
+                                        "BackupBucket",
+                                        "Arn"
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "BackupBucket",
+                                                    "Arn"
+                                                ]
+                                            },
+                                            "*"
+                                        ]
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
