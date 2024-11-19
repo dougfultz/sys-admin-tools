@@ -14,3 +14,9 @@
 1. [Initialize](https://restic.readthedocs.io/en/stable/010_introduction.html#quickstart-guide) repository: `$ restic init`
 1. Run first backup: `$ sudo ./restic-backup.sh`
 1. Create CRON job that executes `restic-backup.sh` as `root`.
+
+# Files
+
+## restic_cloudformation.json
+CloudFormation template that creates necessary resources for Restic and enables S3 Intelligent Tiering.
+- https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering-overview.html
