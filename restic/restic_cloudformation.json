@@ -3,7 +3,12 @@
     "Description": "CloudFormation template that creates necessary resources for Restic and enables S3 Intelligent Tiering.",
     "Resources": {
         "BackupUser": {
-            "Type": "AWS::IAM::User"
+            "Type": "AWS::IAM::User",
+            "Properties": {
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+                ]
+            }
         },
         "BackupBucket": {
             "Type": "AWS::S3::Bucket",
