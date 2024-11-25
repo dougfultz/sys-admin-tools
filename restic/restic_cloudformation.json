@@ -1,6 +1,28 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "CloudFormation template that creates necessary resources for Restic and enables S3 Intelligent Tiering.",
+    "Parameters": {
+        "1ResticDataPrefix": {
+            "Description": "Prefix location where Restic stores the 'data' directory.",
+            "Type": "String",
+            "Default": "restic/data"
+        },
+        "2IntelligentTieringDays": {
+            "Description": "Move objects with prefix to Intelligent Tiering after this number of days.",
+            "Type": "Number",
+            "Default": 1
+        },
+        "3ArchiveAccessDays": {
+            "Description": "Move objects with prefix to Archive Access tier after this number of days.",
+            "Type": "Number",
+            "Default": 180
+        },
+        "4DeepArchiveAccessDays": {
+            "Description": "Move objects with prefix to Deep Archive Access tier after this number of days.",
+            "Type": "Number",
+            "Default": 360
+        }
+    },
     "Resources": {
         "BackupUser": {
             "Type": "AWS::IAM::User",
@@ -25,12 +47,16 @@
                 "LifecycleConfiguration": {
                     "Rules": [
                         {
-                            "Prefix": "restic/data",
+                            "Prefix": {
+                                "Ref": "1ResticDataPrefix"
+                            },
                             "Status": "Enabled",
                             "Transitions": [
                                 {
                                     "StorageClass": "INTELLIGENT_TIERING",
-                                    "TransitionInDays": 1
+                                    "TransitionInDays": {
+                                        "Ref": "2IntelligentTieringDays"
+                                    }
                                 }
                             ]
                         }
@@ -39,16 +65,22 @@
                 "IntelligentTieringConfigurations": [
                     {
                         "Id": "IntelligentTieringArchive",
-                        "Prefix": "restic/data",
+                        "Prefix": {
+                            "Ref": "1ResticDataPrefix"
+                        },
                         "Status": "Enabled",
                         "Tierings": [
                             {
                                 "AccessTier": "ARCHIVE_ACCESS",
-                                "Days": 180
+                                "Days": {
+                                    "Ref": "3ArchiveAccessDays"
+                                }
                             },
                             {
                                 "AccessTier": "DEEP_ARCHIVE_ACCESS",
-                                "Days": 360
+                                "Days": {
+                                    "Ref": "4DeepArchiveAccessDays"
+                                }
                             }
                         ]
                     }
