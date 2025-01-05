@@ -1,0 +1,36 @@
+name: transmission-lan
+
+services:
+  transmission:
+    image: linuxserver/transmission
+    environment:
+      PUID: 568
+      PGID: 568
+    networks:
+      lan-kind-of:
+        ipv4_address: 192.168.XXX.YYY
+    volumes:
+      - type: bind
+        source: /mnt/PATH/config
+        target: /config
+      - type: bind
+        source: /mnt/PATH/watch
+        target: /watch
+      - type: bind
+        source: /mnt/PATH/complete
+        target: /downloads/complete
+      - type: bind
+        source: /mnt/PATH/incomplete
+        target: /downloads/incomplete
+    restart: unless-stopped
+
+
+networks:
+  lan-kind-of:
+    driver: macvlan
+    driver_opts:
+      parent: eno1
+    ipam:
+      config:
+        - subnet: "192.168.XXX.0/24"
+          gateway: "192.168.XXX.1"
